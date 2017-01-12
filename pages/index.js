@@ -10,6 +10,8 @@ import DateTime from '../components/DateTime';
 
 import { config } from 'config';
 
+import fetch from 'isomorphic-fetch';
+
 class Index extends React.Component {
   render() {
     const { calendarFetch } = this.props
@@ -56,7 +58,7 @@ class Index extends React.Component {
               <p style={{
                 'marginBottom': `${rhythm(0.5)}`,
               }}><strong>{location}</strong></p>
-              
+
             </div>
           );
         })}
@@ -66,7 +68,7 @@ class Index extends React.Component {
   }
 }
 
-export default connect(props => {
+export default connect.defaults({ fetch: fetch })(props => {
   const CALENDAR  = '4u7moanq844inh89ipp5t4ghlc@group.calendar.google.com';
   const KEY       = 'AIzaSyBnJSFE54r9rHTAys4y6-A5h8pdU8KKoSA';
 
