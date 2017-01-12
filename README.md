@@ -4,9 +4,9 @@
 
 # Installation
 ---
-Install this starter (assuming Gatsby is installed) by running from your CLI: 
+Run this starter (assuming Gatsby is installed) by running from your CLI: 
 ```
-gatsby new clean gh:brianstone/gatsby-starter-clean
+gatsby develop
 ```
 
 # Deploy
