@@ -39,7 +39,7 @@ class Index extends React.Component {
         if (o.start.dateTime) return o.start.dateTime;
         if (o.start.date) return o.start.date;
       }]).map((event) => {
-          const { id, start, end, location, description } = event;
+          const { id, start, end, summary, location, description } = event;
           return (
             <div key={id}>
               <hr />
@@ -52,12 +52,25 @@ class Index extends React.Component {
               <h1 style={{
                 'marginBottom': `${rhythm(0.5)}`,
               }}>
-                <span className="highlight">{event.summary}</span>
-
+                {(() => {
+                  const hasLink = description.startsWith("http");
+                  if (hasLink) {
+                    return (
+                      <a href={description}>
+                        <span className="highlight">{summary}</span>
+                      </a>
+                    );
+                  }
+                  return (
+                    <span className="highlight">{summary}</span>
+                  );
+                })()}
               </h1>
               <p style={{
                 'marginBottom': `${rhythm(0.5)}`,
-              }}><strong>{location}</strong></p>
+              }}>
+                <strong>{location}</strong>
+              </p>
 
             </div>
           );

@@ -19,20 +19,24 @@ module.exports = React.createClass({
       <div>
         <Headroom
           wrapperStyle={{
-            marginBottom: rhythm(1),
+            marginBottom: rhythm(0.25),
           }}
         >
           <Container
             style={{
               'maxWidth'          : 960,
-              'padding'           : `${rhythm(0.5)}`,
+              'padding'           : `${rhythm(0.25)}`,
               // 'backgroundImage'   : `url(${prefixLink('devday.png')})`,
               // 'backgroundSize'    : 'contain',
               // 'backgroundRepeat'  : 'no-repeat',
               // 'backgroundPosition': '50%',
             }}
           >
-            <h1><span className="highlight">P</span>rossimi <span className="highlight">E</span>venti</h1>
+            <h1 style={{
+              'margin': `${rhythm(0.5)}`,
+            }}>
+              <span className="highlight">P</span>rossimi <span className="highlight">E</span>venti
+            </h1>
           </Container>
         </Headroom>
         <Container
