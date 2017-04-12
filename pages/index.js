@@ -6,7 +6,7 @@ import _ from 'lodash';
 
 import { rhythm } from '../utils/typography';
 
-import DateTime from '../components/DateTime';
+import DateStart from '../components/DateStart';
 
 import { config } from 'config';
 
@@ -14,7 +14,7 @@ import fetch from 'isomorphic-fetch';
 
 class Index extends React.Component {
   render() {
-    const { calendarFetch } = this.props
+    const { calendarFetch } = this.props;
 
     if (calendarFetch.pending || calendarFetch.rejected) {
       return (
@@ -23,7 +23,7 @@ class Index extends React.Component {
     }
 
     // calendarFetch.fulfilled
-    const events = calendarFetch.value.items;
+    const events = calendarFetch.value;
 
     return (
       <div>
@@ -35,57 +35,75 @@ class Index extends React.Component {
           ]}
         />
 
-      {_.sortBy(events, [(o) => {
-        if (o.start.dateTime) return o.start.dateTime;
-        if (o.start.date) return o.start.date;
-      }]).map((event) => {
-          const { id, start, end, summary, location, description } = event;
-          return (
-            <div key={id}>
-              <hr />
+        {_.sortBy(events, ['date']).map((event, i) => {
+            const { date, community, name, speaker, url, location, logo } = event;
+            const summary = `${community}: ${name}`;
+            return (
+              <div key={i}>
+                <hr />
 
-              <p style={{
-                'marginBottom': 0,
-              }}>
-                <DateTime start={start} end={end} />
-              </p>
-              <h1 style={{
-                'marginBottom': `${rhythm(0.5)}`,
-              }}>
-                {(() => {
-                  const hasLink = description.startsWith("http");
-                  if (hasLink) {
+                <p style={{
+                  'marginBottom': 0,
+                }}>
+                  <DateStart start={date} />
+                </p>
+                <h1 style={{
+                  'marginBottom': `${rhythm(0.5)}`,
+                }}>
+                  {(() => {
+                    if (url) {
+                      return (
+                        <a href={url}>
+                          <span className="highlight">{summary}</span>
+                        </a>
+                      );
+                    }
                     return (
-                      <a href={description}>
-                        <span className="highlight">{summary}</span>
-                      </a>
+                      <span className="highlight">{summary}</span>
                     );
-                  }
-                  return (
-                    <span className="highlight">{summary}</span>
-                  );
-                })()}
-              </h1>
-              <p style={{
-                'marginBottom': `${rhythm(0.5)}`,
-              }}>
-                <strong>{location}</strong>
-              </p>
+                  })()}
+                </h1>
+                <p style={{
+                  'marginBottom': `${rhythm(0.5)}`,
+                }}>
+                  <strong>{location}</strong>
+                </p>
 
-            </div>
-          );
-        })}
+              </div>
+            );
+          })
+        }
       </div>
     );
 
   }
 }
 
-export default connect.defaults({ fetch: fetch })(props => {
-  const CALENDAR  = '4u7moanq844inh89ipp5t4ghlc@group.calendar.google.com';
-  const KEY       = 'AIzaSyBnJSFE54r9rHTAys4y6-A5h8pdU8KKoSA';
+export default connect.defaults({ 'fetch': fetch })(props => {
+  const USER  = 'devdayit';
+  const REPO  = 'devday';
+  const REF   = 'master';
 
   return {
-    'calendarFetch': `https://www.googleapis.com/calendar/v3/calendars/${CALENDAR}/events?singleEvents=true&key=${KEY}`,
+    'calendarFetch': {
+      'url'     : `https://api.github.com/repos/${USER}/${REPO}/contents/src/data/upcomingEvents?ref=${REF}`,
+      'then': (contents) => ({
+        'value' : fetchContents(contents)
+      })
+    }
   }
 })(Index);
+
+function fetchContents(contents) {
+    const promises = [];
+    contents.map(
+      (content) => promises.push(
+        fetch(content.url)
+          .then(res => res.json())
+          .then(res => atob(res.content))
+          .then(res => JSON.parse(res))
+      )
+    );
+
+    return Promise.all(promises);
+}
